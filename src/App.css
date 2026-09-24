@@ -1,0 +1,184 @@
+/* ปรับแต่งพื้นฐานให้สมบูรณ์บนมือถือ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* ป้องกันจอเลื่อนออกข้าง */
+}
+
+/* Container หลักรองรับหน้าจอทุกขนาด */
+#root, main, .app-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.counter {
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+/* ส่วนแสดง Hero Section */
+.hero {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  .base,
+  .framework,
+  .vite {
+    inset-inline: 0;
+    margin: 0 auto;
+  }
+
+  .base {
+    width: 140px; /* ลดขนาดลงเล็กน้อยเพื่อไม่ให้ดันจอ */
+    max-width: 100%;
+    position: relative;
+    z-index: 0;
+  }
+
+  .framework,
+  .vite {
+    position: absolute;
+  }
+
+  .framework {
+    z-index: 1;
+    top: 24px;
+    height: 24px;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg) scale(1.2);
+  }
+
+  .vite {
+    z-index: 0;
+    top: 80px;
+    height: 22px;
+    width: auto;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg) scale(0.8);
+  }
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  width: 100%;
+  padding: 16px 0;
+}
+
+#next-steps {
+  display: flex;
+  border-top: 1px solid var(--border);
+  text-align: left;
+  width: 100%;
+  flex-direction: column; /* ปรับให้เรียงลงมาเป็นแนวตั้งบนมือถือเสมอ */
+
+  & > div {
+    flex: 1 1 0;
+    padding: 20px 16px;
+  }
+
+  .icon {
+    margin-bottom: 12px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+#docs {
+  border-right: none;
+  border-bottom: 1px solid var(--border);
+}
+
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  width: 100%;
+
+  li {
+    flex: 1 1 100%; /* แสดงเต็มความกว้างแถวบนมือถือ */
+  }
+
+  .logo {
+    height: 18px;
+  }
+
+  a {
+    color: var(--text-h);
+    font-size: 15px;
+    border-radius: 6px;
+    background: var(--social-bg);
+    display: flex;
+    padding: 10px 14px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+    width: 100%;
+
+    &:hover {
+      box-shadow: var(--shadow);
+    }
+    .button-icon {
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
+#spacer {
+  height: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.ticks {
+  position: relative;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4.5px;
+    border: 5px solid transparent;
+  }
+
+  &::before {
+    left: 0;
+    border-left-color: var(--border);
+  }
+  &::after {
+    right: 0;
+    border-right-color: var(--border);
+  }
+}

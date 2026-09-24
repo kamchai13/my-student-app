@@ -1,0 +1,103 @@
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+}
+
+/* ตั้งค่าพื้นฐานและการรีเซ็ต */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden; /* ป้องกันหน้าจอหลักเลื่อนออกนอกขอบ */
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ปรับ Container หลักให้ขยายเต็ม 100% ทุกอุปกรณ์ */
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+/* Headings & Text */
+h1, h2 {
+  font-family: var(--heading);
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+/* Responsive สำหรับมือถือและไอแพด (Mobile & Tablet Support) */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  /* ปรับเมนูด้านซ้าย (Sidebar) ให้เปลี่ยนมาอยู่ด้านบนเมื่อเปิดในมือถือ */
+  main {
+    padding: 12px !important;
+  }
+
+  /* รองรับการใช้นิ้วปัดตารางบนมือถือ */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* สำหรับหน้าจอไอแพด/แท็บเล็ตทรงตั้ง (Tablet Portrait) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* สำหรับจอคอมพิวเตอร์เดสก์ท็อป */
+@media (min-width: 1025px) {
+  h1 {
+    font-size: 24px;
+  }
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 4px 8px;
+  background: var(--code-bg);
+  word-break: break-word;
+}
