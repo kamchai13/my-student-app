@@ -690,8 +690,8 @@ const handleFileUpload = (e) => {
           {/* TAB 1: ตารางเช็คชื่อ */}
           {activeTab === 'checkin' && (
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', backgroundColor: '#fff', padding: '16px', borderRadius: '8px', gap: '12px', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', boxSizing: 'border-box' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', backgroundColor: '#fff', padding: '16px', borderRadius: '12px', boxSizing: 'border-box' }}>
                   <label style={{ fontWeight: 'bold' }}>เลือกวิชา:</label>
                   <select
                     value={selectedSubject}
