@@ -705,32 +705,33 @@ const handleFileUpload = (e) => {
       </h1>
     </div>
 
-    {/* ชื่อผู้ใช้ + ปุ่มออกจากระบบ */}
-    <div style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      gap: '8px', 
-      flexShrink: 0 
-    }}>
-      <span style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
-        👤 {currentUser.name}
-      </span>
-      <button 
-        onClick={() => setCurrentUser(null)}
-        style={{ 
-          padding: '6px 10px', 
-          backgroundColor: '#dc2626', 
-          color: '#fff', 
-          border: 'none', 
-          borderRadius: '6px', 
-          fontSize: '12px', 
-          cursor: 'pointer',
-          whiteSpace: 'nowrap'
-        }}
-      >
-        ออกจากระบบ
-      </button>
-    </div>
+{/* ชื่อผู้ใช้ + ปุ่มออกจากระบบ */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          flexShrink: 0,
+          marginLeft: 'auto' // <-- เพิ่มบรรทัดนี้ลงไปเพื่อบังคับดันปุ่มชิดขวาสุดเสมอ
+        }}>
+          <span style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
+            👤 {currentUser.name}
+          </span>
+          <button
+            onClick={() => setCurrentUser(null)}
+            style={{
+              padding: '6px 10px',
+              backgroundColor: '#dc2626',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '12px',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            ออกจากระบบ
+          </button>
+        </div>
   </div>
 </header>
 
