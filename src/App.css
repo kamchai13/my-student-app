@@ -78,23 +78,31 @@ input, select, button {
   -webkit-overflow-scrolling: touch;
 }
 
-/* --- 4. สำหรับจอมือถือ (จอแคบกว่า 768px) --- */
+/* --- 4. สำหรับจอมือถือ (บังคับสลับเป็นแนวตั้งเด็ดขาด) --- */
 @media screen and (max-width: 768px) {
   #root, main, .app-container {
-    padding: 8px;
+    padding: 8px !important;
   }
 
   .main-layout {
-    flex-direction: column; /* สลับเป็นแนวตั้งบนมือถือ */
+    display: flex !important;
+    flex-direction: column !important; /* สลับเป็นแนวตั้ง */
+    gap: 12px !important;
   }
 
   .sidebar {
-    width: 100%;
-    min-width: 100%;
-    padding: 10px;
+    width: 100% !important;
+    min-width: 100% !important;
+    padding: 10px !important;
+  }
+
+  /* บังคับทุก element ย่อยใน main ไม่ให้ดันจอทะลุ */
+  main, main div, main section {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   header h1, header h2, .header-title {
-    font-size: 16px;
+    font-size: 15px;
   }
 }
