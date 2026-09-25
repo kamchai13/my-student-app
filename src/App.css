@@ -8,20 +8,19 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  overflow-x: hidden; /* ป้องกันจอเลื่อนออกข้าง */
+  overflow-x: hidden;
   font-family: system-ui, -apple-system, sans-serif;
   background-color: #f8fafc;
 }
 
-/* ลบ max-width 600px ออก แล้วปรับให้ยืดเต็มจอแบบ Responsive */
 #root, main, .app-container {
   width: 100%;
-  max-width: 1200px; /* ขยายให้รองรับหน้าจอใหญ่และแนวนอน */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 12px;
 }
 
-/* --- 2. จัดการส่วน Header (โลโก้ + ชื่อมหาวิทยาลัย + ข้อมูลผู้ใช้) --- */
+/* --- 2. Header --- */
 header, .header-container {
   width: 100%;
   display: flex;
@@ -30,61 +29,72 @@ header, .header-container {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px;
-  background-color: #f59e0b; /* สีส้มเดิมของคุณ */
+  background-color: #f59e0b;
   border-radius: 12px;
   box-sizing: border-box;
 }
 
-/* ปรับขนาดตัวอักษรชื่อระบบไม่ให้ล้นหรือตกบรรทัดแปลกๆ */
 header h1, header h2, .header-title {
-  font-size: 18px !important;
+  font-size: 18px;
   line-height: 1.3;
   margin: 0;
   color: #1e293b;
-  word-break: keep-all; /* ป้องกันการตัดคำกลางประโยค */
+  word-break: keep-all;
 }
 
-/* โลโก้ CMRU */
 .logo-cmru, header img {
   max-height: 48px;
   width: auto;
   flex-shrink: 0;
 }
 
-/* --- 3. จัดการ Layout หลัก (เมนูซ้าย + เนื้อหาขวา) --- */
-.main-layout, form, div[style*="display: grid"] {
-  display: grid !important;
-  grid-template-columns: 1fr; /* แนวตั้ง (Portrait): แสดง 1 คอลัมน์เต็ม */
+/* --- 3. Layout หลัก (คอมพิวเตอร์ & จอกว้าง) --- */
+.main-layout {
+  display: flex;
+  flex-direction: row;
   gap: 16px;
   width: 100%;
 }
 
-/* ปรับช่องกรอกข้อมูลและปุ่มให้เต็มกว้าง กดง่ายบนมือถือ */
-input, select, button {
-  width: 100%;
-  font-size: 16px !important; /* Prevent iOS Auto-Zoom */
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 8px;
   box-sizing: border-box;
 }
 
-/* ให้ตารางเลื่อนซ้าย-ขวาได้เวลามือถือจอแคบ */
+/* ช่อง Input / Select ขนาดมาตรฐานและป้องกัน iOS ซูม */
+input, select, button {
+  width: 100%;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
 .table-container, table {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* --- 4. สำหรับ มือถือแนวนอน (Landscape) & หน้าจอคอมพิวเตอร์ --- */
-@media screen and (min-width: 640px) {
+/* --- 4. สำหรับจอมือถือ (จอแคบกว่า 768px) --- */
+@media screen and (max-width: 768px) {
   #root, main, .app-container {
-    padding: 20px;
+    padding: 8px;
+  }
+
+  .main-layout {
+    flex-direction: column; /* สลับเป็นแนวตั้งบนมือถือ */
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    padding: 10px;
   }
 
   header h1, header h2, .header-title {
-    font-size: 22px !important;
-  }
-
-  /* สลับกลับเป็น 2 คอลัมน์เมื่อมีพื้นที่หน้าจอกว้างพอ (แนวนอน) */
-  .main-layout, form div[style*="display: grid"], form div[style*="display:grid"] {
-    grid-template-columns: 280px 1fr !important;
+    font-size: 16px;
   }
 }

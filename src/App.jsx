@@ -652,22 +652,38 @@ const handleFileUpload = (e) => {
         </div>
       </header>
 
-      <div style={{ display: 'flex', minHeight: 'calc(100vh - 65px)', width: '100%' }}>
-        {/* Sidebar */}
-        <aside style={{ width: '220px', minWidth: '220px', backgroundColor: '#ffffff', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', borderRight: '1px solid #cbd5e1', boxSizing: 'border-box' }}>
-          <button
-            onClick={() => setActiveTab('checkin')}
-            style={{ padding: '10px 14px', backgroundColor: activeTab === 'checkin' ? '#2563eb' : 'transparent', color: activeTab === 'checkin' ? '#fff' : '#334155', border: 'none', borderRadius: '6px', textAlign: 'left', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            📝 ตารางเช็คชื่อรายสัปดาห์
-          </button>
-          <button
-            onClick={() => setActiveTab('management')}
-            style={{ padding: '10px 14px', backgroundColor: activeTab === 'management' ? '#2563eb' : 'transparent', color: activeTab === 'management' ? '#fff' : '#334155', border: 'none', borderRadius: '6px', textAlign: 'left', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            📚 จัดการวิชาและนักศึกษา
-          </button>
-        </aside>
+      {/* บรรทัด 655: เปลี่ยนไปใช้ className="main-layout" */}
+<div className="main-layout" style={{ minHeight: 'calc(100vh - 65px)', width: '100%' }}>
+{/* บรรทัด 657: เปลี่ยนไปใช้ className="sidebar" */}
+  <aside className="sidebar">
+    <button
+      onClick={() => setActiveTab('checkin')}
+      style={{ 
+        padding: '10px 14px', 
+        width: '100%', 
+        backgroundColor: activeTab === 'checkin' ? '#2563eb' : '#f3f4f6', 
+        color: activeTab === 'checkin' ? '#fff' : '#000', 
+        border: 'none', 
+        borderRadius: '8px', 
+        marginBottom: '8px' 
+      }}
+>
+      📝 ตารางเช็คชื่อรายสัปดาห์
+    </button>
+    <button
+      onClick={() => setActiveTab('management')}
+      style={{ 
+        padding: '10px 14px', 
+        width: '100%', 
+        backgroundColor: activeTab === 'management' ? '#2563eb' : '#f3f4f6', 
+        color: activeTab === 'management' ? '#fff' : '#000', 
+        border: 'none', 
+        borderRadius: '8px' 
+      }}
+    >
+      📚 จัดการวิชาและนักศึกษา
+    </button>
+  </aside>
 
         {/* Main Content Area */}
         <main style={{ flex: 1, padding: '24px', overflowX: 'auto', boxSizing: 'border-box', width: 'calc(100% - 220px)' }}>
