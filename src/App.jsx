@@ -294,25 +294,41 @@ const [excelFileName, setExcelFileName] = useState('');       // เก็บช
     setInputRoom('');
   };
 
-  // --- ฟังก์ชันถอนรายวิชา (ลบเอกสารวิชา + ลบรายวิชานั้นออกจากนักศึกษาทุกคน) ---
+ // --- ฟังก์ชันถอนรายวิชา (ลบเอกสารวิชา + ล้างประวัติเช็คชื่อ + ถอนรายวิชานี้ออกจากนักศึกษาทุกคน) ---
   const handleDeleteSubject = (subId) => {
     showConfirm(
       'ยืนยันการถอนรายวิชา',
-      `คุณต้องการถอนวิชา/ลบวิชา [${subId}] ใช่หรือไม่? (นักศึกษาทุกคนในวิชานี้จะถูกปลดออก)`,
+      `คุณต้องการถอนวิชา/ลบวิชา [${subId}] ใช่หรือไม่? (ประวัติการเช็คชื่อของวิชานี้จะถูกลบทิ้งทั้งหมด)`,
       async () => {
-        // 1. ลบเอกสารวิชา
-        await deleteDoc(doc(db, 'subjects', subId));
+        try {
+          // 1. ค้นหาและลบประวัติการเช็คชื่อทั้งหมดที่ผูกกับวิชานี้
+          const attendanceQuery = query(
+            collection(db, "attendances"),
+            where("subjectId", "==", subId)
+          );
+          const attendanceSnapshot = await getDocs(attendanceQuery);
+          const deletePromises = attendanceSnapshot.docs.map((docItem) =>
+            deleteDoc(doc(db, "attendances", docItem.id))
+          );
+          await Promise.all(deletePromises);
 
-        // 2. ลบรหัสวิชานี้ออกจากตัวนักศึกษาทุกคนที่มีวิชานี้อยู่
-        const studentsWithSub = students.filter(s => s.subjects && s.subjects.includes(subId));
-        for (const std of studentsWithSub) {
-          const updatedSubs = std.subjects.filter(s => s !== subId);
-          await updateDoc(doc(db, 'students', std.id), {
-            subjects: updatedSubs
-          });
+          // 2. ลบเอกสารรายวิชา
+          await deleteDoc(doc(db, 'subjects', subId));
+
+          // 3. ถอนรายวิชานี้ออกจากตัวนักศึกษาทุกคนที่มีวิชานี้อยู่
+          const studentsWithSub = students.filter(s => s.subjects && s.subjects.includes(subId));
+          for (const std of studentsWithSub) {
+            const updatedSubs = std.subjects.filter(s => s !== subId);
+            await updateDoc(doc(db, 'students', std.id), {
+              subjects: updatedSubs
+            });
+          }
+
+          showAlert('สำเร็จ', `ถอนรายวิชา [${subId}] และล้างประวัติการเช็คชื่อเรียบร้อยแล้ว`, 'success');
+        } catch (error) {
+          console.error("เกิดข้อผิดพลาดในการถอนวิชา:", error);
+          showAlert('ผิดพลาด', 'ไม่สามารถถอนรายวิชาได้ กรุณาลองใหม่อีกครั้ง', 'error');
         }
-
-        showAlert('สำเร็จ', `ถอนรายวิชา [${subId}] เรียบร้อยแล้ว`, 'success');
       }
     );
   };
