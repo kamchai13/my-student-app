@@ -782,8 +782,8 @@ const handleFileUpload = (e) => {
                     <p style={{ margin: '0 0 6px 0', fontSize: '13px', color: '#ef4444', fontWeight: 'bold' }}>
                       ⚠️ QR Code เปลี่ยนรหัสสดทุก 10 วินาที | 1 เครื่องสแกนได้ 1 ครั้ง
                     </p>
-                    <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>
-                      ลิงก์เช็คชื่อ: <a href={qrCheckinUrl} target="_blank" rel="noreferrer">{qrCheckinUrl}</a>
+                    <p style={{ margin: 0, fontSize: '12px', color: '#16a34a', wordBreak: 'break-all' }}>
+                      ลิงก์เช็คชื่อ: <a href={qrCheckinUrl} target="_blank" rel="noreferrer" style={{ wordBreak: 'break-all' }}>{qrCheckinUrl}</a>
                     </p>
                   </div>
                 </div>
@@ -856,7 +856,7 @@ const handleFileUpload = (e) => {
 
           {/* TAB 2: จัดการวิชาและนักศึกษา */}
           {activeTab === 'management' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', boxSizing: 'border-box' }}>
               
               {/* คอลัมน์ซ้าย: ฟอร์มเพิ่ม/แก้ไข ข้อมูลรายวิชา */}
               <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', border: '1px solid #cbd5e1', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
