@@ -636,21 +636,73 @@ const handleFileUpload = (e) => {
       `}</style>
 
       {/* Header - อัปเดตชื่อระบบเป็น มหาวิทยาลัยราชภัฏเชียงใหม่ */}
-      <header style={{ width: '100%', backgroundColor: '#f59e0b', color: '#ffffff', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxSizing: 'border-box' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ backgroundColor: '#ffffff', color: '#0284c7', fontWeight: 'bold', padding: '6px 12px', borderRadius: '50%' }}>CMRU</div>
-          <h1 style={{ margin: 0, fontSize: '20px' }}>ระบบเช็คชื่อนักศึกษาของมหาวิทยาลัยราชภัฏเชียงใหม่</h1>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span>👤 {currentUser.name}</span>
-          <button
-            onClick={() => setCurrentUser(null)}
-            style={{ padding: '6px 12px', backgroundColor: '#dc2626', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            ออกจากระบบ
-          </button>
-        </div>
-      </header>
+      <header style={{ 
+  width: '100%', 
+  backgroundColor: '#f59e0b', 
+  color: '#000', 
+  padding: '8px 12px', 
+  borderRadius: '12px', 
+  boxSizing: 'border-box' 
+}}>
+  <div style={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    gap: '8px', 
+    flexWrap: 'wrap' 
+  }}>
+    {/* โลโก้ + ชื่อระบบ */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 200px' }}>
+      <div style={{ 
+        backgroundColor: '#ffffff', 
+        color: '#0284c7', 
+        borderRadius: '50%', 
+        padding: '4px 8px', 
+        fontWeight: 'bold', 
+        fontSize: '12px',
+        flexShrink: 0
+      }}>
+        CMRU
+      </div>
+      <h1 style={{ 
+        margin: 0, 
+        fontSize: '14px', 
+        lineHeight: '1.2', 
+        fontWeight: 'bold',
+        wordBreak: 'break-word'
+      }}>
+        ระบบเช็คชื่อนักศึกษาของ<br />มหาวิทยาลัยราชภัฏเชียงใหม่
+      </h1>
+    </div>
+
+    {/* ชื่อผู้ใช้ + ปุ่มออกจากระบบ */}
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      gap: '8px', 
+      flexShrink: 0 
+    }}>
+      <span style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
+        👤 {currentUser.name}
+      </span>
+      <button 
+        onClick={() => setCurrentUser(null)}
+        style={{ 
+          padding: '6px 10px', 
+          backgroundColor: '#dc2626', 
+          color: '#fff', 
+          border: 'none', 
+          borderRadius: '6px', 
+          fontSize: '12px', 
+          cursor: 'pointer',
+          whiteSpace: 'nowrap'
+        }}
+      >
+        ออกจากระบบ
+      </button>
+    </div>
+  </div>
+</header>
 
       {/* บรรทัด 655: เปลี่ยนไปใช้ className="main-layout" */}
 <div className="main-layout" style={{ minHeight: 'calc(100vh - 65px)', width: '100%' }}>
