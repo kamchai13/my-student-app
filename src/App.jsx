@@ -296,43 +296,40 @@ const [excelFileName, setExcelFileName] = useState('');       // เก็บช
 
 // --- ฟังก์ชันถอนรายวิชา + ล้างประวัติเช็คชื่อทุกจุด ---
   const handleDeleteSubject = (subId) => {
-    // ดึงข้อมูลวิชาเพื่อเอารหัสวิชา (code) มาใช้ค้นหา
+    // 1. ค้นหาข้อมูลวิชาเพื่อดึงทั้้ง ID และ Code/Sec
     const targetSub = subjects.find(s => s.id === subId);
-    const subCode = targetSub ? targetSub.code : subId;
+    const subCode = targetSub ? targetSub.code : '';
+    const subName = targetSub ? targetSub.name : '';
 
     showConfirm(
       'ยืนยันการถอนรายวิชา',
-      `คุณต้องการถอนวิชา/ลบวิชา [${subCode}] ใช่หรือไม่? (ประวัติการเช็คชื่อทั้งหมดจะถูกลบทิ้ง)`,
+      `คุณต้องการถอนวิชา/ลบวิชา [${subCode || subId}] ใช่หรือไม่? (ประวัติการเช็คชื่อทั้งหมดจะถูกลบทิ้ง)`,
       async () => {
         try {
-          // 1. ค้นหาใน Collection "attendances" ทั้งจาก subjectId และ subjectCode
-          const collectionsToCheck = ["attendances", "checkins"];
+          // 2. ดึงข้อมูลประวัติเช็คชื่อทั้งหมดในคอลเลกชัน attendances มาลบ
+          const attendancesRef = collection(db, "attendances");
+          const querySnapshot = await getDocs(attendancesRef);
 
-          for (const colName of collectionsToCheck) {
-            try {
-              // ค้นหาด้วย subjectId (Document ID)
-              const q1 = query(collection(db, colName), where("subjectId", "==", subId));
-              const snap1 = await getDocs(q1);
-              snap1.docs.forEach(async (d) => await deleteDoc(doc(db, colName, d.id)));
-
-              // ค้นหาด้วย subjectCode (รหัสวิชา)
-              const q2 = query(collection(db, colName), where("subjectCode", "==", subCode));
-              const snap2 = await getDocs(q2);
-              snap2.docs.forEach(async (d) => await deleteDoc(doc(db, colName, d.id)));
-
-              // ค้นหาด้วย subject (ข้อความชื่อวิชา)
-              const q3 = query(collection(db, colName), where("subject", "==", subCode));
-              const snap3 = await getDocs(q3);
-              snap3.docs.forEach(async (d) => await deleteDoc(doc(db, colName, d.id)));
-            } catch (err) {
-              // ข้ามหากไม่พบคอลเลกชัน
+          const deletePromises = [];
+          querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            // ลบหากมีข้อมูลตรงกับ subId, subCode หรือ รหัสวิชาที่สแกน
+            if (
+              data.subjectId === subId || 
+              data.subjectCode === subCode || 
+              data.subject === subCode ||
+              (subCode && data.subject && data.subject.includes(subCode))
+            ) {
+              deletePromises.push(deleteDoc(doc(db, "attendances", docSnap.id)));
             }
-          }
+          });
 
-          // 2. ลบเอกสารรายวิชาหลัก
+          await Promise.all(deletePromises);
+
+          // 3. ลบเอกสารรายวิชาหลัก
           await deleteDoc(doc(db, 'subjects', subId));
 
-          // 3. ถอนรายวิชานี้ออกจากนักศึกษาทุกคน
+          // 4. ถอนรายวิชานี้ออกจากตัวนักศึกษาทุกคน
           const studentsWithSub = students.filter(s => s.subjects && (s.subjects.includes(subId) || s.subjects.includes(subCode)));
           for (const std of studentsWithSub) {
             const updatedSubs = std.subjects.filter(s => s !== subId && s !== subCode);
@@ -341,7 +338,7 @@ const [excelFileName, setExcelFileName] = useState('');       // เก็บช
             });
           }
 
-          showAlert('สำเร็จ', `ถอนรายวิชา [${subCode}] และล้างประวัติเรียบร้อยแล้ว`, 'success');
+          showAlert('สำเร็จ', `ถอนรายวิชาและล้างประวัติการเช็คชื่อเรียบร้อยแล้ว`, 'success');
         } catch (error) {
           console.error("เกิดข้อผิดพลาดในการถอนวิชา:", error);
           showAlert('ผิดพลาด', 'ไม่สามารถถอนรายวิชาได้ กรุณาลองใหม่อีกครั้ง', 'error');
