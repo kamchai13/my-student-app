@@ -1,4 +1,4 @@
-/* ปรับแต่งพื้นฐานให้สมบูรณ์บนมือถือ */
+/* --- 1. รีเซ็ตและตั้งค่า Container หลัก --- */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -7,178 +7,84 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
+  min-height: 100vh;
   overflow-x: hidden; /* ป้องกันจอเลื่อนออกข้าง */
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc;
 }
 
-/* Container หลักรองรับหน้าจอทุกขนาด */
+/* ลบ max-width 600px ออก แล้วปรับให้ยืดเต็มจอแบบ Responsive */
 #root, main, .app-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 1200px; /* ขยายให้รองรับหน้าจอใหญ่และแนวนอน */
   margin: 0 auto;
-  padding: 16px;
+  padding: 12px;
 }
 
-.counter {
-  font-size: 16px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
-/* ส่วนแสดง Hero Section */
-.hero {
-  position: relative;
+/* --- 2. จัดการส่วน Header (โลโก้ + ชื่อมหาวิทยาลัย + ข้อมูลผู้ใช้) --- */
+header, .header-container {
+  width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #f59e0b; /* สีส้มเดิมของคุณ */
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+/* ปรับขนาดตัวอักษรชื่อระบบไม่ให้ล้นหรือตกบรรทัดแปลกๆ */
+header h1, header h2, .header-title {
+  font-size: 18px !important;
+  line-height: 1.3;
+  margin: 0;
+  color: #1e293b;
+  word-break: keep-all; /* ป้องกันการตัดคำกลางประโยค */
+}
+
+/* โลโก้ CMRU */
+.logo-cmru, header img {
+  max-height: 48px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* --- 3. จัดการ Layout หลัก (เมนูซ้าย + เนื้อหาขวา) --- */
+.main-layout, form, div[style*="display: grid"] {
+  display: grid !important;
+  grid-template-columns: 1fr; /* แนวตั้ง (Portrait): แสดง 1 คอลัมน์เต็ม */
+  gap: 16px;
   width: 100%;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 140px; /* ลดขนาดลงเล็กน้อยเพื่อไม่ให้ดันจอ */
-    max-width: 100%;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 24px;
-    height: 24px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg) scale(1.2);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 80px;
-    height: 22px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg) scale(0.8);
-  }
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+/* ปรับช่องกรอกข้อมูลและปุ่มให้เต็มกว้าง กดง่ายบนมือถือ */
+input, select, button {
   width: 100%;
-  padding: 16px 0;
+  font-size: 16px !important; /* Prevent iOS Auto-Zoom */
+  box-sizing: border-box;
 }
 
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
+/* ให้ตารางเลื่อนซ้าย-ขวาได้เวลามือถือจอแคบ */
+.table-container, table {
   width: 100%;
-  flex-direction: column; /* ปรับให้เรียงลงมาเป็นแนวตั้งบนมือถือเสมอ */
-
-  & > div {
-    flex: 1 1 0;
-    padding: 20px 16px;
-  }
-
-  .icon {
-    margin-bottom: 12px;
-    width: 22px;
-    height: 22px;
-  }
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-#docs {
-  border-right: none;
-  border-bottom: 1px solid var(--border);
-}
-
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 20px 0 0;
-  width: 100%;
-
-  li {
-    flex: 1 1 100%; /* แสดงเต็มความกว้างแถวบนมือถือ */
+/* --- 4. สำหรับ มือถือแนวนอน (Landscape) & หน้าจอคอมพิวเตอร์ --- */
+@media screen and (min-width: 640px) {
+  #root, main, .app-container {
+    padding: 20px;
   }
 
-  .logo {
-    height: 18px;
+  header h1, header h2, .header-title {
+    font-size: 22px !important;
   }
 
-  a {
-    color: var(--text-h);
-    font-size: 15px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 10px 14px;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-    width: 100%;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-}
-
-#spacer {
-  height: 32px;
-  border-top: 1px solid var(--border);
-}
-
-.ticks {
-  position: relative;
-  width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
+  /* สลับกลับเป็น 2 คอลัมน์เมื่อมีพื้นที่หน้าจอกว้างพอ (แนวนอน) */
+  .main-layout, form div[style*="display: grid"], form div[style*="display:grid"] {
+    grid-template-columns: 280px 1fr !important;
   }
 }

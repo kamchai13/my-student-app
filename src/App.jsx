@@ -74,7 +74,9 @@ function App() {
 
   // Excel Import State
   const [excelTargetSubject, setExcelTargetSubject] = useState('');
-
+   // ➕ เพิ่ม 2 บรรทัดนี้ต่อท้ายลงไปครับ:
+const [pendingStudents, setPendingStudents] = useState([]); // เก็บรายชื่อจาก Excel ชั่วคราว
+const [excelFileName, setExcelFileName] = useState('');       // เก็บชื่อไฟล์ Excel ที่อัปโหลด
   // Custom Alert & Confirm Modal States
   const [customAlert, setCustomAlert] = useState({ isOpen: false, title: '', message: '', type: 'success' });
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
@@ -220,6 +222,53 @@ function App() {
     }, { merge: true });
 
     showAlert('สำเร็จ', editingSubjectId ? 'อัปเดตข้อมูลรายวิชาเรียบร้อยแล้ว' : 'เพิ่มรายวิชาเรียบร้อยแล้ว', 'success');
+    showAlert('สำเร็จ', editingSubjectId ? 'อัปเดตข้อมูลรายวิชาเรียบร้อยแล้ว' : 'เพิ่มรายวิชาเรียบร้อยแล้ว', 'success');
+
+    // 🔴 วางเพิ่มตรงนี้เลยครับ 👇
+    if (pendingStudents.length > 0) {
+      const targetSubId = editingSubjectId || subjectId;
+
+      for (const pStd of pendingStudents) {
+        const studentRef = doc(db, 'students', pStd.id);
+        const existingStd = students.find(s => s.id === pStd.id);
+        const existingSubjects = existingStd?.subjects || [];
+
+        if (!existingSubjects.includes(targetSubId)) {
+          await setDoc(studentRef, {
+            id: pStd.id,
+            name: pStd.name,
+            subjects: [...existingSubjects, targetSubId]
+          }, { merge: true });
+        }
+      }
+
+      setStudents(prevStudents => {
+        let updated = [...prevStudents];
+        pendingStudents.forEach(pStd => {
+          const index = updated.findIndex(s => s.id === pStd.id);
+          if (index !== -1) {
+            const existingSubjects = updated[index].subjects || [];
+            if (!existingSubjects.includes(targetSubId)) {
+              updated[index] = {
+                ...updated[index],
+                subjects: [...existingSubjects, targetSubId]
+              };
+            }
+          } else {
+            updated.push({
+              id: pStd.id,
+              name: pStd.name,
+              subjects: [targetSubId]
+            });
+          }
+        });
+        return updated;
+      });
+
+      setPendingStudents([]);
+      setExcelFileName('');
+    }
+
     handleResetSubjectForm();
   };
 
@@ -281,54 +330,43 @@ function App() {
     XLSX.writeFile(workbook, 'ตัวอย่างไฟล์รายชื่อนักศึกษา.xlsx');
   };
 
-  // --- อัปโหลดไฟล์ Excel นำเข้าข้อมูลนักศึกษา ---
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+// --- อัปโหลดไฟล์ Excel นำเข้าข้อมูลนักศึกษา ---
+const handleFileUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const targetSub = excelTargetSubject || selectedSubject;
-    if (!targetSub) {
-      showAlert('กรุณาเลือกวิชา', 'กรุณาเลือกรายวิชาก่อนทำการนำเข้าไฟล์ Excel', 'error');
-      return;
-    }
+  const reader = new FileReader();
+  reader.onload = async (evt) => {
+    try {
+      const bstr = evt.target.result;
+      const workbook = XLSX.read(bstr, { type: 'binary' });
+      const wsname = workbook.SheetNames[0];
+      const ws = workbook.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws);
 
-    const reader = new FileReader();
-    reader.onload = async (evt) => {
-      try {
-        const bstr = evt.target.result;
-        const workbook = XLSX.read(bstr, { type: 'binary' });
-        const wsname = workbook.SheetNames[0];
-        const ws = workbook.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws);
+      // ดึงรายชื่อนักศึกษาจากไฟล์
+      const parsedStudents = data.map(row => ({
+        id: String(row['id'] || row['รหัสนักศึกษา'] || row['รหัส'] || '').trim(),
+        name: String(row['name'] || row['ชื่อ-นามสกุล'] || row['ชื่อ'] || '').trim()
+      })).filter(s => s.id && s.name);
 
-        let count = 0;
-        for (const row of data) {
-          const stdId = String(row['id'] || row['รหัสนักศึกษา'] || row['รหัส'] || row['student_id'] || '').trim();
-          const stdName = String(row['name'] || row['ชื่อ-นามสกุล'] || row['ชื่อ'] || '').trim();
-
-          if (stdId && stdName) {
-            const currentStd = students.find(s => s.id === stdId);
-            let currentSubjects = currentStd ? (currentStd.subjects || []) : [];
-
-            if (!currentSubjects.includes(targetSub)) {
-              currentSubjects.push(targetSub);
-            }
-
-            await setDoc(doc(db, 'students', stdId), {
-              name: stdName,
-              subjects: currentSubjects
-            }, { merge: true });
-            count++;
-          }
-        }
-        showAlert('นำเข้าสำเร็จ', `นำเข้ารายชื่อนักศึกษาในวิชา [${targetSub}] สำเร็จ ${count} คน`, 'success');
-      } catch (err) {
-        console.error(err);
-        showAlert('ข้อผิดพลาด', 'อ่านไฟล์ Excel ไม่สำเร็จ กรุณาตรวจสอบรูปแบบไฟล์', 'error');
+      if (parsedStudents.length === 0) {
+        showAlert('ข้อผิดพลาด', 'ไม่พบข้อมูลนักศึกษาในไฟล์ Excel หรือรูปแบบคอลัมน์ไม่ถูกต้อง', 'error');
+        return;
       }
-    };
-    reader.readAsBinaryString(file);
+
+      // ✅ เก็บลง State ชั่วคราวไว้ก่อน (ยังไม่ยัดลง students)
+      setPendingStudents(parsedStudents);
+      setExcelFileName(file.name);
+
+      showAlert('แนบไฟล์สำเร็จ', `ดึงข้อมูลนักศึกษา ${parsedStudents.length} คนเรียบร้อย (กรุณากดปุ่ม "บันทึกรายวิชา" เพื่อนำเข้าข้อมูล)`);
+    } catch (err) {
+      console.error(err);
+      showAlert('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการอ่านไฟล์ Excel', 'error');
+    }
   };
+  reader.readAsBinaryString(file);
+};
 
   const handleWeeklyCheckin = async (student, weekNum, currentStatus) => {
     if (!selectedSubject) return;
@@ -953,6 +991,20 @@ function App() {
                       onChange={handleFileUpload}
                       style={{ fontSize: '13px' }}
                     />
+                    
+                  {/* บล็อกแสดงชื่อไฟล์แนบ */}
+      {excelFileName && (
+        <div style={{ marginTop: '8px', fontSize: '13px', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>📎 แนบไฟล์แล้ว: <strong>{excelFileName}</strong> ({pendingStudents.length} รายชื่อ)</span>
+          <button 
+            type="button" 
+            onClick={() => { setPendingStudents([]); setExcelFileName(''); }}
+            style={{ color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            ยกเลิก
+          </button>
+        </div>
+      )}  
                   </div>
                 </div>
 
